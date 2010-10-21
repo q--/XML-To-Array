@@ -1,10 +1,29 @@
 <?php
 
+/*
+ * PHP Script to convert XML to an associate array
+ * ===============================================
+ *
+ * Usage
+ * -----
+ *
+ * $xml = '<foo></foo>';
+ *
+ * $XMLToArray = new XML_To_Array($xml);
+ *
+ * print_r($XMLToArray->array);
+ *
+ */
+
 class XML_To_Array
 {
 	public $array = array();
 
-	function __construct(&$xml)
+	/*
+	 * Initialize
+	 * @param $xml
+	 */
+	 function __construct(&$xml)
 	{
 		$parser = xml_parser_create();
 
@@ -53,6 +72,10 @@ class XML_To_Array
 		return $this->array;
 	}
 
+	/*
+	 * Remove recursion in result array
+	 * @param $array
+	 */
 	function removeRecursion(&$array)
 	{
 		foreach ( $array as $k => $v )
