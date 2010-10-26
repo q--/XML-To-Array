@@ -13,8 +13,16 @@
  *
  * print_r($XMLToArray->array);
  *
+ * @package XML_To_Array
+ * @copyright 2010 ElbertF http://elbertf.com
+ * @license http://sam.zoy.org/wtfpl/COPYING DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *
  */
 
+/*
+ * Convert XML to an array
+ * @abstract
+ */
 class XML_To_Array
 {
 	public $array = array();
@@ -46,8 +54,8 @@ class XML_To_Array
 					$currentTag['_ATTR'] = $value['attributes'];
 				}
 
-				$currentTag['_p'] = &$this->array;
-				$this->array      = &$currentTag;
+				$currentTag['_RECURSION'] = &$this->array;
+				$this->array              = &$currentTag;
 			}
 			elseif ( $value['type'] == 'complete' )
 			{
@@ -80,7 +88,7 @@ class XML_To_Array
 	{
 		foreach ( $array as $k => $v )
 		{
-			if ( $k == '_p' )
+			if ( $k == '_RECURSION' )
 			{
 				unset($array[$k]);
 			}
