@@ -71,7 +71,7 @@ class XML_To_Array
 			}
 			elseif ( $value['type'] == 'close' )
 			{
-				$this->array = &$this->array['_p'];
+				$this->array = &$this->array['_RECURSION'];
 			}
 		}
 
