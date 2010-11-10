@@ -31,7 +31,7 @@ class XML_To_Array
 	 * Initialize
 	 * @param $xml
 	 */
-	 function __construct(&$xml)
+	function __construct(&$xml)
 	{
 		$parser = xml_parser_create();
 
@@ -45,33 +45,37 @@ class XML_To_Array
 		{
 			$tag = $value['tag'];
 
-			if ( $value['type'] == 'open' )
+			$i = isset($this->array[$tag]) ? count($this->array[$tag]) : 0;
+
+			switch ( $value['type'] )
 			{
-				$currentTag = &$this->array[$tag];
+				case 'open':
+					$currentTag = &$this->array[$tag];
 
-				if ( isset($value['attributes']) )
-				{
-					$currentTag['_ATTR'] = $value['attributes'];
-				}
+					if ( isset($value['attributes']) )
+					{
+						$currentTag[$i]['_ATTR'] = $value['attributes'];
+					}
 
-				$currentTag['_RECURSION'] = &$this->array;
-				$this->array              = &$currentTag;
-			}
-			elseif ( $value['type'] == 'complete' )
-			{
-				$currentTag = &$this->array[$tag];
+					$currentTag[$i]['_RECURSION'] = &$this->array;
+					$this->array                  = &$currentTag[$i];
 
-				if ( isset($value['attributes']) )
-				{
-					$currentTag['_ATTR'][$k] = $value['attributes'];
-				}
+					break;
+				case 'complete':
+					$currentTag = &$this->array[$tag];
 
-				$currentTag['_VALUE'] = isset($value['value']) ? $value['value'] : '';
+					if ( isset($value['attributes']) )
+					{
+						$currentTag[$i]['_ATTR'] = $value['attributes'];
+					}
 
-			}
-			elseif ( $value['type'] == 'close' )
-			{
-				$this->array = &$this->array['_RECURSION'];
+					$currentTag[$i]['_VALUE'] = isset($value['value']) ? $value['value'] : '';
+
+					break;
+				case 'close':
+					$this->array = &$this->array['_RECURSION'];
+
+					break;
 			}
 		}
 
@@ -86,15 +90,18 @@ class XML_To_Array
 	 */
 	function removeRecursion(&$array)
 	{
-		foreach ( $array as $k => $v )
+		if ( $array )
 		{
-			if ( $k == '_RECURSION' )
+			foreach ( $array as $k => $v )
 			{
-				unset($array[$k]);
-			}
-			elseif ( is_array($array[$k]) )
-			{
-				$this->removeRecursion($array[$k]);
+				if ( $k === '_RECURSION' )
+				{
+					unset($array[$k]);
+				}
+				elseif ( is_array($array[$k]) )
+				{
+					$this->removeRecursion($array[$k]);
+				}
 			}
 		}
 	}
